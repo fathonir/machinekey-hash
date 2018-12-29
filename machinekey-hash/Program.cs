@@ -1,12 +1,38 @@
 ﻿using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace machinekey_hash
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(String[] args)
         {
-            Console.WriteLine("Hello World!");
+            String[] commandLineArgs = System.Environment.GetCommandLineArgs();
+            string decryptionKey = CreateKey(System.Convert.ToInt32(commandLineArgs[1]));
+            string validationKey = CreateKey(System.Convert.ToInt32(commandLineArgs[2]));
+
+            Console.WriteLine("<machineKey validationKey=\"{0}\" decryptionKey=\"{1}\" validation=\"SHA1\"/>", validationKey, decryptionKey);
+        }
+
+        static String CreateKey(int numBytes)
+        {
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            byte[] buff = new byte[numBytes];
+
+            rng.GetBytes(buff);
+            return BytesToHexString(buff);
+        }
+
+        static String BytesToHexString(byte[] bytes)
+        {
+            StringBuilder hexString = new StringBuilder(64);
+
+            for (int counter = 0; counter < bytes.Length; counter++)
+            {
+                hexString.Append(String.Format("{0:X2}", bytes[counter]));
+            }
+            return hexString.ToString();
         }
     }
 }
